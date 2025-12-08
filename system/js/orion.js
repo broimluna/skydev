@@ -90,6 +90,7 @@ async function handleOriFile(input) {
 
         saveAppToStorage(metadata, finalContent);
         createAppWindow(metadata, finalContent, true);
+        loadInstalledApps();
 
     } catch (err) {
         if (err.message && err.message.includes("compression")) {
@@ -123,54 +124,122 @@ function getMimeType(filename) {
     return map[ext] || 'application/octet-stream';
 }
 
-function saveAppToStorage(metadata, content) {
+// --- IndexedDB Helper ---
+const DB_NAME = "skyOS_Disk";
+const STORE_NAME = "installed_apps";
+const DB_VERSION = 1;
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                // Use 'title' as the unique key
+                db.createObjectStore(STORE_NAME, { keyPath: "title" });
+            }
+        };
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject("DB Error: " + event.target.error);
+    });
+}
+
+async function saveAppToStorage(metadata, content) {
     try {
-        let apps = JSON.parse(localStorage.getItem('skyOS_apps') || "[]");
-        // Remove existing app with same title to update it
-        apps = apps.filter(app => app.metadata.title !== metadata.title);
-        apps.push({ metadata, content });
-        localStorage.setItem('skyOS_apps', JSON.stringify(apps));
+        const db = await openDB();
+        const rw = db.transaction(STORE_NAME, "readwrite");
+        const store = rw.objectStore(STORE_NAME);
+
+        // We use the title as the ID. 
+        // We store the metadata and the full HTML content.
+        const appData = {
+            title: metadata.title,
+            metadata: metadata,
+            content: content,
+            installedAt: new Date()
+        };
+
+        store.put(appData);
+
+        rw.oncomplete = () => {
+            console.log(`App "${metadata.title}" saved to Disk.`);
+        };
+        
+        rw.onerror = (e) => {
+            console.error("Save failed", e);
+            alert("Failed to install app to disk.");
+        };
+
     } catch (e) {
-        console.error("Storage full", e);
-        alert("App installed for this session only (Browser storage full)");
+        console.error("Database error", e);
     }
 }
 
-function loadInstalledApps() {
+async function loadInstalledApps() {
     try {
-        const apps = JSON.parse(localStorage.getItem('skyOS_apps') || "[]");
-        $('.orionappsect').empty(); // Clear list to prevent duplicates
+        const db = await openDB();
+        const ro = db.transaction(STORE_NAME, "readonly");
+        const store = ro.objectStore(STORE_NAME);
+        const request = store.getAll();
 
-        apps.forEach(app => {
-            // Load app but do not auto-open (false)
-            const win = createAppWindow(app.metadata, app.content, false);
-            
-            // Choose icon (inlined data URI if present) or fallback placeholder
-            const iconSrc = app.metadata && app.metadata.icon ? app.metadata.icon : 'system/img/icons/placeholder.png';
-            const appTitle = app.metadata && app.metadata.title ? app.metadata.title : "External App";
-            const appVersion = (app.metadata && app.metadata.version) ? app.metadata.version : '1.0';
-            const escapedTitle = (appTitle).replace(/'/g, "\\'");
+        request.onsuccess = () => {
+            const apps = request.result;
+            if (!apps) return;
 
-            // Display metadata and uninstall button in Orion App Section (with icon)
-            const appEntry = `
-                <div style="padding: 8px; border-bottom: 1px solid #ccc; display: flex; gap:8px; align-items: center;">
-                    <img src="${iconSrc}" alt="icon" width="40" height="40" style="flex:0 0 40px; object-fit:contain;">
-                    <div style="flex:1;">
-                        <strong>${appTitle}</strong> <br>
-                        <!--<small style="color:#666;">v${appVersion}</small>-->
-                    </div>
-                    <button onclick="uninstallApp('${escapedTitle}')">Uninstall</button>
-                </div>`;
-            $('.orionappsect').append(appEntry);
+            $('.orionappsect').empty(); // Clear list to prevent duplicates
 
-            // Add to apps menu (use the same icon)
-            const id = win.attr('data-id');
-            const title = appTitle;
-            const menuItem = `<li onclick="openWindow(${id})"><a><img border="0" alt="" src="${iconSrc}" width="32" height="32"><br>${title} (Ori)</a></li>`;
-            $('.applist').append(menuItem);
-        });
-} catch (e) {
-        console.error("Error loading apps", e);
+            apps.forEach(app => {
+                // Load app but do not auto-open (false)
+                const win = createAppWindow(app.metadata, app.content, false);
+                
+                // Choose icon (inlined data URI if present) or fallback placeholder
+                const iconSrc = app.metadata && app.metadata.icon ? app.metadata.icon : 'system/img/icons/placeholder.png';
+                const appTitle = app.metadata && app.metadata.title ? app.metadata.title : "External App";
+                const appVersion = (app.metadata && app.metadata.version) ? app.metadata.version : '1.0';
+                const escapedTitle = (appTitle).replace(/'/g, "\\'");
+
+                // Display metadata and uninstall button in Orion App Section (with icon)
+                const appEntry = `
+                    <div style="padding: 8px; border-bottom: 1px solid #ccc; display: flex; gap:8px; align-items: center;">
+                        <img src="${iconSrc}" alt="icon" width="40" height="40" style="flex:0 0 40px; object-fit:contain;">
+                        <div style="flex:1;">
+                            <strong>${appTitle}</strong> <br>
+                            <!--<small style="color:#666;">v${appVersion}</small>-->
+                        </div>
+                        <button onclick="uninstallApp('${escapedTitle}')">Uninstall</button>
+                    </div>`;
+                $('.orionappsect').append(appEntry);
+
+                // Add to apps menu (use the same icon)
+                const id = win.attr('data-id');
+                const title = appTitle;
+                const menuItem = `<li onclick="openWindow(${id})"><a><img border="0" alt="" src="${iconSrc}" width="32" height="32"><br>${title} (Ori)</a></li>`;
+                $('.applist').append(menuItem);
+            });
+        };
+
+    } catch (e) {
+        console.error("Error loading apps from disk", e);
+    }
+}
+
+async function uninstallApp(title) {
+    try {
+        const db = await openDB();
+        const rw = db.transaction(STORE_NAME, "readwrite");
+        const store = rw.objectStore(STORE_NAME);
+        
+        const request = store.delete(title);
+
+        request.onsuccess = () => {
+            console.log(`App "${title}" uninstalled.`);
+            location.reload(); // Refresh to clear icons and windows
+        };
+        
+    } catch (e) {
+        console.error("Error uninstalling app", e);
     }
 }
 
@@ -179,7 +248,7 @@ function createAppWindow(metadata, content, autoOpen = true) {
     const title = metadata.title || "External App";
     const width = metadata.width || 400;
     const height = metadata.height || 300;
-    const iconSrc = metadata && metadata.icon ? metadata.icon : 'system/img/icons/placeholder.png'; // <--- Get icon
+    const iconSrc = metadata && metadata.icon ? metadata.icon : 'YOUR PLACEHOLDER IMAGE'; // <--- Get icon
 
     // Create a Blob URL for the content to isolate it in an iframe
     const blob = new Blob([content], { type: 'text/html' });
@@ -187,23 +256,22 @@ function createAppWindow(metadata, content, autoOpen = true) {
 
     // Create the DOM element with an iframe
     // REMOVED .appcont wrapper to fix layout issues
-    const newWindow = $(`<window data-title="${title}" appicon="<img src='${iconSrc}'  width='28' height='28'>">
+    const newApp = $(`<window data-title="${title}" appicon="<img src='${iconSrc}'  width='28' height='28'>">
         <iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>
     </window>`);
     
     // Set dimensions
-    newWindow.css({ width: width, height: height });
+    newApp.css({ width: width, height: height });
 
     // Append to desktop
-    $('desktop').append(newWindow);
+    $('desktop').append(newApp);
 
-    // Initialize using coreOS system functions
-    setupWindow(newWindow[0]);
-    setupTaskbar(newWindow[0]);
+    setupWindow(newApp[0]);
+    setupTaskbar(newApp[0]); 
     
     // FIX: Apply resizable to the main window element, NOT .wincontent
     // FIX: Add pointer-events handling so iframe doesn't steal mouse during resize
-    newWindow.resizable({
+    newApp.resizable({
         handles: 'n, e, s, w, ne, se, sw, nw',
         minWidth: 200,
         minHeight: 150,
@@ -219,27 +287,9 @@ function createAppWindow(metadata, content, autoOpen = true) {
 
     // Open the new app immediately only if requested
     if (autoOpen) {
-        const id = newWindow.attr('data-id');
+        const id = newApp.attr('data-id');
         openWindow(id);
     }
 
-    return newWindow;
-}
-
-function uninstallApp(title) {
-    try {
-        let apps = JSON.parse(localStorage.getItem('skyOS_apps') || "[]");
-        const initialLength = apps.length;
-        
-        // Filter out the app with the matching title
-        apps = apps.filter(app => app.metadata.title !== title);
-        
-        // If an app was actually removed, update storage and reload
-        if (apps.length < initialLength) {
-            localStorage.setItem('skyOS_apps', JSON.stringify(apps));
-            location.reload(); // Refresh to clear icons and windows
-        }
-    } catch (e) {
-        console.error("Error uninstalling app", e);
-    }
+    return newApp;
 }
