@@ -11,6 +11,9 @@ $(document).ready(function() {
 	$('.applist a').on('click', function() {
 	  $('#appsmenu').removeClass('opened');
 	});
+	$('#settingsUP').on('click', function() {
+		$('#appsmenu').removeClass('opened');
+	  });
   });
 //Right click menu
 document.oncontextmenu = rightClick;
