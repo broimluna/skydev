@@ -1,7 +1,7 @@
 function startServices() {
-	loadSettings();
-    timeService();
-	weatherService();
+	//loadSettings();
+  timeService();
+	//weatherService();
 	startCookies();
 }
 window.addEventListener('load', function () {
@@ -14,6 +14,9 @@ $(document).ready(function() {
 	$('#settingsUP').on('click', function() {
 		$('#appsmenu').removeClass('opened');
 	  });
+    $('.installed-ori-app').on('click', function() {
+      $('#appsmenu').removeClass('opened');
+      });
   });
 //Right click menu
 document.oncontextmenu = rightClick;

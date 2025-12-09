@@ -71,6 +71,7 @@ for (var i = 0; i < btns.length; i++) {
   });
 }
 });
+
 window.addEventListener('load', function () {
   $(".abtver").html("Version " + kernel_version + "." + build_number)
 })
@@ -88,7 +89,6 @@ function loadWallpaperSection() {
 <h2>Wallpaper</h2>
  <input id="inputbtn" class="wppicker" type="file" accept="image/*" onchange="changeBG(event)">
                          <br>
-                         <br>
 <button class="settingsbutton" onclick="resetBG();">Reset BG</button>   
 `;
 document.querySelector('.wallpapersection').innerHTML += bgHTML;
@@ -97,7 +97,6 @@ function loadColorsSection() {
   const colorHTML = `
  <h2>Colors</h2>
                          <input id="setcolorpicker" type="color" value="#ff0000" onchange="colorpicker();">Select your color</input>
-                         <br>
                          <br>
                          <button class="settingsbutton" onclick="resetColors();">Reset Colors</button> 
 `;

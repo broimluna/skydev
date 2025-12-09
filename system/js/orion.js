@@ -189,7 +189,7 @@ async function loadInstalledApps() {
             if (!apps) return;
 
             $('.orionappsect').empty(); // Clear list to prevent duplicates
-
+            $('.applist .installed-ori-app').remove();
             apps.forEach(app => {
                 // Load app but do not auto-open (false)
                 const win = createAppWindow(app.metadata, app.content, false);
@@ -215,8 +215,8 @@ async function loadInstalledApps() {
                 // Add to apps menu (use the same icon)
                 const id = win.attr('data-id');
                 const title = appTitle;
-                const menuItem = `<li onclick="openWindow(${id})"><a><img border="0" alt="" src="${iconSrc}" width="32" height="32"><br>${title} (Ori)</a></li>`;
-                $('.applist').append(menuItem);
+                const menuItem = `<a onclick="openWindow(${id})" class="installed-ori-app"><img border="0" alt="" src="${iconSrc}" width="32" height="32"><br>${title} (Ori)</a>`;
+                $('.applist center').append(menuItem);
             });
         };
 
