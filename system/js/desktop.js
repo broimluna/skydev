@@ -1,7 +1,7 @@
 function startServices() {
-	//loadSettings();
+	loadSettings();
   timeService();
-	//weatherService();
+	weatherService();
 	startCookies();
 }
 window.addEventListener('load', function () {
