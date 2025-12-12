@@ -215,7 +215,7 @@ async function loadInstalledApps() {
                 // Add to apps menu (use the same icon)
                 const id = win.attr('data-id');
                 const title = appTitle;
-                const menuItem = `<a onclick="openWindow(${id})" class="installed-ori-app"><img border="0" alt="" src="${iconSrc}" width="32" height="32"><br>${title} (Ori)</a>`;
+                const menuItem = `<a onclick="openWindow(${id})" class="installed-ori-app"><img border="0" alt="" src="${iconSrc}" width="32" height="32"><br>${title}</a>`;
                 $('.applist center').append(menuItem);
             });
         };
@@ -248,7 +248,7 @@ function createAppWindow(metadata, content, autoOpen = true) {
     const title = metadata.title || "External App";
     const width = metadata.width || 400;
     const height = metadata.height || 300;
-    const iconSrc = metadata && metadata.icon ? metadata.icon : 'YOUR PLACEHOLDER IMAGE'; // <--- Get icon
+    const iconSrc = metadata && metadata.icon ? metadata.icon : 'system/img/icons/placeholder.png'; // <--- Get icon
 
     // Create a Blob URL for the content to isolate it in an iframe
     const blob = new Blob([content], { type: 'text/html' });
@@ -293,3 +293,38 @@ function createAppWindow(metadata, content, autoOpen = true) {
 
     return newApp;
 }
+function resetOrionDB() {
+    var dbName = "skyOS_Disk";
+    var storeName = "installed_apps";
+
+    const request = indexedDB.open(dbName);
+  
+    request.onerror = (event) => {
+      console.error("Database error:", event.target.errorCode);
+    };
+  
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+  
+      // The transaction MUST be 'readwrite' to modify data.
+      const transaction = db.transaction([storeName], "readwrite");
+  
+      const store = transaction.objectStore(storeName);
+  
+      const clearRequest = store.clear(); // <-- This is the key method!
+  
+      clearRequest.onsuccess = () => {
+        console.log(`✅ Success: Object Store "${storeName}" in Database "${dbName}" has been completely cleared.`);
+      };
+  
+      clearRequest.onerror = (event) => {
+        console.error("❌ Error clearing object store:", event.target.error);
+      };
+  
+      // Optional: Log completion and close the database
+      transaction.oncomplete = () => {
+        console.log("Transaction completed.");
+        db.close();
+      };
+    };
+  }

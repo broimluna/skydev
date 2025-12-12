@@ -15,7 +15,7 @@
     
     <div class="chat-container" id="chat-container">
         <div class="message assistant" style="color: red"><strong>This only works on newer Chrome versions, other Chromium based browsers are currently not supported.</strong></div>
-        <div class="message assistant">Enter a message, press **Submit** or press **Enter** to load the model and begin chat.</div>
+        <div class="message assistant">Enter a message, press <strong>Submit</strong> or press <strong>Enter</strong> to load the model and begin chat.</div>
     </div>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -35,7 +35,7 @@
             if (isLoading) return true; // Already loading, avoid duplicate calls
             isLoading = true;
             
-            chatContainer.innerHTML = "<div class='message assistant loading'>**Loading Model...** This may take a moment.</div>";
+            chatContainer.innerHTML = "<div class='message assistant loading'><strong>Loading Model...</strong>\nThis may take a moment.</div>";
             chatContainer.scrollTop = chatContainer.scrollHeight; 
 
             try {
@@ -45,7 +45,7 @@
                         m.addEventListener("downloadprogress", (e) => {
                             const percent = Math.floor((e.loaded / e.total) * 100);
                             console.log(`Downloaded ${percent}%`);
-                            chatContainer.innerHTML = `<div class='message assistant loading'>**Downloading Model...**\n ${percent}%</div>`;
+                            chatContainer.innerHTML = `<div class='message assistant loading'><strong>Downloading Model...</strong>\n ${percent}%</div>`;
                             chatContainer.scrollTop = chatContainer.scrollHeight; 
                         });
                     },
@@ -63,7 +63,7 @@
                 // console.log("Type of chatSession:", typeof chatSession);
                 // console.log("chatSession has .generate:", typeof chatSession.generate);
 
-                chatContainer.innerHTML = "<div class='message assistant'>Model **ready**. Ask a question!</div>";
+                chatContainer.innerHTML = "<div class='message assistant'>Model <strong>ready</strong>. Ask a question!</div>";
                 isLoading = false;
                 return true; // Success
                 

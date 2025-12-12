@@ -174,3 +174,32 @@ function toggleSimpleStart() {
   $(".quickweanews").toggle();
   document.getElementById("appsmenu").classList.toggle("simple");
 }
+
+function finishFTUE() {
+	var usrInpt = document.getElementById("usrinpt").value;
+	$("#firstexperiencewindow").fadeOut(200);
+	$(".backgroundftue").fadeOut(200);
+	document.getElementsByClassName("FTUEtext")[0].innerText = "Let's begin.";
+	setTimeout(function() {$("#firstexperience").fadeOut(200);$("taskbar").css("display", "block");$("desktop").css("background", "")}, 2000);
+	if ( $('#usrinpt').val() === "" ) 
+	{
+		document.cookie = "FTUEStatus=completed"
+		localStorage.setItem("FTUEStatus", "completed")
+		document.cookie = "mOSUsername=User"
+		localStorage.setItem("mOSUsername", "User")
+		document.getElementsByClassName("userProfileTxt")[0].innerText = "User";
+		document.getElementsByClassName("userProfileTxt")[0].textContent = "User";
+		document.getElementsByClassName("userProfileSetTxt")[0].innerText = "User";
+		document.getElementsByClassName("userProfileSetTxt")[0].textContent = "User";
+	}
+	else {
+		document.cookie = "mOSUsername=" + usrInpt
+		localStorage.setItem("mOSUsername", usrInpt)
+		document.cookie = "FTUEStatus=completed"
+		localStorage.setItem("FTUEStatus", "completed")
+		document.getElementsByClassName("userProfileTxt")[0].innerText = usrInpt;
+		document.getElementsByClassName("userProfileTxt")[0].textContent = usrInpt;
+		document.getElementsByClassName("userProfileSetTxt")[0].innerText = usrInpt;
+		document.getElementsByClassName("userProfileSetTxt")[0].textContent = usrInpt;
+	}
+}

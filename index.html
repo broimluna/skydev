@@ -61,6 +61,8 @@
                         <div id="tabsettings">
                             <button data-title="Customization" onclick="opensTab('Customization')">Customization</button>
                             <button data-title="Options" onclick="opensTab('Options')">Options</button>
+                            <button data-title="OrionApps" onclick="opensTab('OrionApps')">Orion</button>
+
                             <!--<button class="settingsbutton" data-title="User Profile" onclick="opensTab('UserProfile')">User Profile</button>-->
                             <button data-title="About" onclick="opensTab('About')">About</button>
                         </div>
@@ -84,8 +86,19 @@
                             <input id="bubblesCheckbox" type="checkbox" onchange="toggleBubbles()" checked> Toggle Bubbles Effect<br>
                             <input id="blurCheckbox" type="checkbox" onchange="toggleBlur()" checked> Toggle Background Blur<br>
                             <input id="simplestartCheckbox" type="checkbox" onchange="toggleSimpleStart()"> Toggle Simple Start
-
                          </div>
+
+                         <div id="OrionApps" class="setab" style="display: none;">
+                            <link rel="stylesheet" type="text/css" href="apps/orion/orion.css" />
+                            <div class="orioninstallersect">
+                              <center>
+                              <input type="file" id="oriInput" accept=".ori" style="display: none;" onchange="handleOriFile(this)">
+                              <button onclick="document.getElementById('oriInput').click()">Install App (.ori)</button>
+                          </center>
+                            </div>
+                            <div class="orionappsect">
+                            </div>                         
+                        </div>
 
                         <div id="UserProfile" class="setab" style="display: none;">
                               <h1>Coming soon</h1>
@@ -115,17 +128,6 @@
                         </window>
 
                 
-                    <window data-title="Orion App Installer" data-html="true" appicon="<img src='system/img/icons/placeholder.png'  width='28' height='28'>">
-                        <link rel="stylesheet" type="text/css" href="apps/orion/orion.css" />
-                      <div class="orioninstallersect">
-                        <center>
-                        <input type="file" id="oriInput" accept=".ori" style="display: none;" onchange="handleOriFile(this)">
-                        <button onclick="document.getElementById('oriInput').click()">Install App (.ori)</button>
-                    </center>
-                      </div>
-                      <div class="orionappsect">
-                      </div>
-                    </window>
 
 
 
@@ -140,7 +142,6 @@
                     <a onclick="openWindow(5)"><img border="0" alt="" src="system/img/icons/bronze.png" width="32" height="32"><br>Bronze</a>
                     <a onclick="openWindow(6)"><img border="0" alt="" src="system/img/icons/minesweeper.png" width="32" height="32"><br>Minesweeper</a>
                     <a onclick="openWindow(7)"><img border="0" alt="" src="system/img/icons/terminal.png" width="32" height="32"><br>Terminal</a>
-                    <a onclick="openWindow(9)"><img border="0" alt="" src="system/img/icons/placeholder.png" width="32" height="32"><br>Orion Installer</a>
                     </center>
 				</div>
 				<div class="quickweanews">
@@ -200,5 +201,41 @@
                     <div><img id="startupload" src="system/img/loading.gif"></div>	
                 </div>
         </desktop>
+        <div id="firstexperience">
+            <a class="FTUEtext"></a>
+            <div class="backgroundftue">
+            <div class="circles">
+                <div class="circle1"></div>
+                <div class="circle2"></div>
+                <div class="circle3"></div>
+            </div>
+        </div>
+            <div id="firstexperiencewindow">
+             <h1>First-time User Experience</h1>
+             <br>
+             <h2>Welcome to mountainOS.<br>Let's set up your account and user interface.</h2>
+             <br>
+             <input id="usrinpt" name="usrinpt" type="text" maxlength="10" placeholder="Enter your username..." required="required" class="textinput">
+             <br>
+             <br>
+             <a>Choose a profile picture, or leave it blank.</a>
+             <br>
+             <input id="inputbtn" class="wppicker" type="file" accept="image/*" onchange="changePFP(event)">
+             <br>
+             <br>
+             <a>Choose a desktop background image, or leave it blank.</a>
+             <br>
+             <input id="inputbtn" class="wppicker" type="file" accept="image/*" onchange="changeBG(event)">
+             <br>
+             <br>
+             <input type="color" id="colorpickersetup"><a>Choose your color</a></input>
+             <br>
+             <br>
+             <input type="checkbox" onclick="addAppTitleTaskbarStp()" id="AppTitleOnTaskBarPanelStp" class="checkBox"><a class="addAppTitleTaskbarTxt">Add app title to taskbar icons.</a></input>
+             <br>
+             <br>
+             <button onclick="finishFTUE()">Finish setup.</button>
+            </div>
+          </div>
     </body>
 </html>

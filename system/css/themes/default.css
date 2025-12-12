@@ -684,3 +684,105 @@ window {
       opacity: 0;
   }
 }
+
+
+#firstexperience {
+  z-index: 999999;
+  height: 100%;
+  width: 100%;
+  display: none;
+  position: absolute;
+  margin: 0;
+  top: 0;
+  left: 0;
+}
+
+#firstexperiencewindow {
+  z-index: 999998;
+  height: 88%;
+  width: 88%;
+  position: relative;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: calc(0% + 10%);
+  margin-top: -50px;
+  backdrop-filter: blur(16px);
+  background: #ffffff1d;
+  border-radius: 10px;
+  border: 2px solid rgba(109, 109, 109, 0.5);
+}
+
+#firstexperience h1 {
+      left: 10px;
+      font-size: xx-large;
+      color: white !important;
+      top: 5px;
+      position: relative;
+}
+#firstexperience h2 {
+  left: 10px;
+  font-size: x-large;
+  top: 0px;
+  color: white !important;
+  position: relative;
+}
+
+#firstexperience input, #firstexperience .centrdAppsTxt, #firstexperience button, #firstexperience a {
+  left: 10px;
+  position: relative;
+  color: white !important;
+}
+#firstexperiencewindow > #usrinpt::placeholder {
+ color: white !important;
+}
+
+
+.FTUEtext {
+  left: 0;
+  right: 0;
+  line-height: 200px;
+  margin: 0 auto;
+  text-align: center;
+  margin-top: -100px;
+  font-size: 45px;
+  position: absolute !important;
+  top: 50%;
+  width: 100%;
+}
+
+.circle1{
+  left:30vw;
+  top:25vh;
+  position: absolute;
+  animation: circle1Path 12s infinite, fadeCircleIn 1332ms ease-out;
+  animation-direction: alternate;
+  border-radius: 100vw;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(255 255 255 / 30%) 15.62%, rgb(0 0 0 / 15%) 100%);
+}
+.circle2{
+  left:45vw;
+  top:30vh;
+  position: absolute;
+  animation: circle2Path 11.5s infinite, fadeCircleIn 1332ms ease-out;
+  animation-direction: alternate;
+  border-radius: 100vw;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(255 255 255 / 30%) 15.62%, rgb(0 0 0 / 15%) 100%);
+}
+.circle3{
+  left:35vw;
+  top:30vh;position: absolute;
+  animation: circle3Path 15s infinite, fadeCircleIn 1332ms ease-out;
+  animation-direction: alternate;
+  border-radius: 100vw;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(255 255 255 / 50%) 15.62%, rgb(0 0 0 / 15%) 100%);
+}
+
+.confirmButton {
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 15%;
+}
